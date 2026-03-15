@@ -1,0 +1,134 @@
+#include <gtest/gtest.h>
+#include "mini_gtest.h"
+#include <queue>
+#include <set>
+#include <stdexcept>
+
+class Queue {
+private:
+    std::queue<int> data;
+
+public:
+    void push(int value) {
+        data.push(value);
+    }
+
+    int pop() {
+        if (data.empty()) {
+            throw std::out_of_range("Queue is empty");
+        }
+
+        int value = data.front();
+        data.pop();
+        return value;
+    }
+};
+
+class Heap {
+private:
+    std::priority_queue<int> data;
+
+public:
+    void push(int value) {
+        data.push(value);
+    }
+
+    int pop() {
+        if (data.empty()) {
+            throw std::out_of_range("Heap is empty");
+        }
+
+        int value = data.top();
+        data.pop();
+        return value;
+    }
+};
+
+class BinaryTree {
+private:
+    std::set<int> data;
+
+public:
+    void push(int value) {
+        data.insert(value);
+    }
+
+    int pop() {
+        if (data.empty()) {
+            throw std::out_of_range("BinaryTree is empty");
+        }
+
+        int value = *data.begin();
+        data.erase(data.begin());
+        return value;
+    }
+
+    bool search(int value) {
+        return data.find(value) != data.end();
+    }
+};
+
+TEST(QueueTest, PushPopWorksCorrectly) {
+    Queue q;
+    q.push(10);
+    q.push(20);
+
+    EXPECT_EQ(q.pop(), 10);
+    EXPECT_EQ(q.pop(), 20);
+}
+
+TEST(QueueTest, PopFromEmptyQueueThrows) {
+    Queue q;
+    EXPECT_THROW(q.pop(), std::out_of_range);
+}
+
+TEST(HeapTest, PopReturnsMaxElement) {
+    Heap h;
+    h.push(10);
+    h.push(30);
+    h.push(20);
+
+    EXPECT_EQ(h.pop(), 30);
+}
+
+TEST(HeapTest, PopFromEmptyHeapThrows) {
+    Heap h;
+    EXPECT_THROW(h.pop(), std::out_of_range);
+}
+
+TEST(BinaryTreeTest, SearchFindsExistingElement) {
+    BinaryTree tree;
+    tree.push(10);
+    tree.push(5);
+    tree.push(15);
+
+    EXPECT_TRUE(tree.search(5));
+}
+
+TEST(BinaryTreeTest, SearchReturnsFalseForMissingElement) {
+    BinaryTree tree;
+    tree.push(10);
+    tree.push(5);
+    tree.push(15);
+
+    EXPECT_FALSE(tree.search(100));
+}
+
+TEST(BinaryTreeTest, PopReturnsSmallestElement) {
+    BinaryTree tree;
+    tree.push(10);
+    tree.push(5);
+    tree.push(15);
+
+    EXPECT_EQ(tree.pop(), 5);
+}
+
+TEST(BinaryTreeTest, PopFromEmptyTreeThrows) {
+    BinaryTree tree;
+    EXPECT_THROW(tree.pop(), std::out_of_range);
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
